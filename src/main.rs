@@ -6,7 +6,14 @@ fn main() {
     match enable_raw_mode() {
         Ok(_) => {
             for b in io::stdin().bytes() {
-                let c = b.unwrap() as char;
+                let b = b.unwrap();
+                let c = b as char;
+
+                if c.is_control() {
+                    println!("Binary: {0:08b} ASCII: {0:#03} \r", b);
+                } else {
+                    println!("Binary: {0:08b} ASCII: {0:#03} Character: {1:#?}\r", b, c);
+                }
 
                 if c == 'q' {
                     match disable_raw_mode() {
