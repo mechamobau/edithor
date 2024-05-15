@@ -3,10 +3,11 @@ use std::io::{self, Read};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 
 fn main() {
-    match enable_raw_mode() {
-        Ok(_) => {
-            for b in io::stdin().bytes() {
-                let b = b.unwrap();
+    enable_raw_mode().unwrap();
+
+    for b in io::stdin().bytes() {
+        match b {
+            Ok(b) => {
                 let c = b as char;
 
                 if c.is_control() {
@@ -16,14 +17,12 @@ fn main() {
                 }
 
                 if c == 'q' {
-                    match disable_raw_mode() {
-                        Ok(_) => println!("Goodbye!"),
-                        Err(e) => println!("Error disabling raw mode: {}", e),
-                    }
                     break;
                 }
             }
+            Err(err) => println!("Error: {}", err),
         }
-        Err(e) => println!("Error enabling raw mode: {}", e),
+
+        disable_raw_mode().unwrap();
     }
 }
